@@ -1,5 +1,11 @@
+import AuthCheck from "../../components/AuthCheck";
+
 function AdminPostsPage({}) {
-  return <main></main>;
+  return (
+    <AuthCheck>
+      <main></main>{" "}
+    </AuthCheck>
+  );
 }
 
 export default AdminPostsPage;
