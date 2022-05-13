@@ -30,7 +30,7 @@ function PostManager() {
     .doc(auth.currentUser.uid)
     .collection("posts")
     .doc(typeof slug === "string" && slug);
-  const post: any = useDocumentDataOnce(postRef)[0];
+  const post = useDocumentDataOnce(postRef)[0];
 
   return (
     <main className={styles.container}>
