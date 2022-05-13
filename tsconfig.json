@@ -15,6 +15,28 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "components/AuthCheck.js",
+    "components/ImageUploader.js",
+    "components/Loader.js",
+    "components/Metatags.js",
+    "components/Navbar.js",
+    "components/PostContent.js",
+    "components/PostFeed.js",
+    "lib/context.js",
+    "lib/firebase.js",
+    "lib/hooks.js",
+    "pages/[username]/[slug].js",
+    "pages/[username]/index.js",
+    "pages/admin/[slug].js",
+    "pages/admin/index.js",
+    "pages/_app.js",
+    "pages/404.js",
+    "pages/enter.js",
+    "pages/index.js"
+  ],
   "exclude": ["node_modules"]
 }

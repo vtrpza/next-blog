@@ -12,7 +12,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import ImageUploader from "../../components/ImageUploader";
 
-export default function AdminPostEdit(props) {
+export default function AdminPostEdit() {
   return (
     <AuthCheck>
       <PostManager />
@@ -25,12 +25,13 @@ function PostManager() {
 
   const router = useRouter();
   const { slug } = router.query;
+
   const postRef = firestore
     .collection("users")
     .doc(auth.currentUser.uid)
     .collection("posts")
-    .doc(typeof slug === "string" && slug);
-  const post = useDocumentDataOnce(postRef)[0];
+    .doc(slug);
+  const [post] = useDocumentDataOnce(postRef);
 
   return (
     <main className={styles.container}>
@@ -55,6 +56,7 @@ function PostManager() {
             <Link href={`/${post.username}/${post.slug}`}>
               <button className="btn-blue">Live view</button>
             </Link>
+            <DeletePostButton postRef={postRef} />
           </aside>
         </>
       )}
@@ -63,7 +65,7 @@ function PostManager() {
 }
 
 function PostForm({ defaultValues, postRef, preview }) {
-  const { register, handleSubmit, reset, watch, formState, errors } = useForm({
+  const { register, errors, handleSubmit, formState, reset, watch } = useForm({
     defaultValues,
     mode: "onChange",
   });
@@ -93,22 +95,20 @@ function PostForm({ defaultValues, postRef, preview }) {
       <div className={preview ? styles.hidden : styles.controls}>
         <ImageUploader />
 
-        <textarea name="content" ref={register}></textarea>
+        <textarea
+          name="content"
+          ref={register({
+            maxLength: { value: 20000, message: "content is too long" },
+            minLength: { value: 10, message: "content is too short" },
+            required: { value: true, message: "content is required" },
+          })}
+        ></textarea>
+
+        {errors.content && (
+          <p className="text-danger">{errors.content.message}</p>
+        )}
 
         <fieldset>
-          <textarea
-            name="content"
-            ref={register({
-              maxLength: { value: 20000, message: "content is too long" },
-              minLength: { value: 10, message: "content is too short" },
-              required: { value: true, message: "content is required" },
-            })}
-          ></textarea>
-
-          {errors.content && (
-            <p className="text-danger">{errors.content.message}</p>
-          )}
-
           <input
             className={styles.checkbox}
             name="published"
@@ -118,10 +118,33 @@ function PostForm({ defaultValues, postRef, preview }) {
           <label>Published</label>
         </fieldset>
 
-        <button type="submit" disabled={!isDirty || !isValid}>
+        <button
+          type="submit"
+          className="btn-green"
+          disabled={!isDirty || !isValid}
+        >
           Save Changes
         </button>
       </div>
     </form>
+  );
+}
+
+function DeletePostButton({ postRef }) {
+  const router = useRouter();
+
+  const deletePost = async () => {
+    const doIt = confirm("are you sure!");
+    if (doIt) {
+      await postRef.delete();
+      router.push("/admin");
+      toast("post annihilated ", { icon: "🗑️" });
+    }
+  };
+
+  return (
+    <button className="btn-red" onClick={deletePost}>
+      Delete
+    </button>
   );
 }
