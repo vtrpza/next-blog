@@ -1,9 +1,51 @@
-function EnterPage({}) {
+/* eslint-disable no-nested-ternary */
+import React from "react";
+import { auth, googleAuthProvider } from "../lib/firebase";
+
+// Sign in with Google button
+function SignInButton() {
+  const signInWithGoogle = async () => {
+    await auth.signInWithPopup(googleAuthProvider);
+  };
+
   return (
-    <main>
-      <h1>Sign Up</h1>
-    </main>
+    <button type="button" className="btn-google" onClick={signInWithGoogle}>
+      <img alt="google sigin logo" src="/google.png" /> Sign in with Google
+    </button>
   );
 }
 
-export default EnterPage;
+// Sign out button
+function SignOutButton() {
+  return (
+    <button type="button" onClick={() => auth.signOut()}>
+      Sign Out
+    </button>
+  );
+}
+
+function UsernameForm() {
+  return null;
+}
+
+export default function Enter() {
+  const user = null;
+  const username = null;
+
+  // 1. user signed out <SignInButton />
+  // 2. user signed in, but missing username <UsernameForm />
+  // 3. user signed in, has username <SignOutButton />
+  return (
+    <main>
+      {user ? (
+        !username ? (
+          <UsernameForm />
+        ) : (
+          <SignOutButton />
+        )
+      ) : (
+        <SignInButton />
+      )}
+    </main>
+  );
+}
