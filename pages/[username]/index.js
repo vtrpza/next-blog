@@ -36,7 +36,7 @@ export default function UserProfilePage({ user, posts }) {
   return (
     <main>
       <UserProfile user={user} />
-      <PostFeed admin={true} posts={posts} />
+      <PostFeed posts={posts} />
     </main>
   );
 }

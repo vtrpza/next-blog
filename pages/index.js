@@ -60,7 +60,7 @@ export default function Home(props) {
         description="Get the latest posts on our site"
       />
 
-      <PostFeed admin={true} posts={posts} />
+      <PostFeed posts={posts} />
 
       {!loading && !postsEnd && (
         <button onClick={getMorePosts}>Load more</button>
