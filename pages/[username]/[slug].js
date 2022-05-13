@@ -91,4 +91,3 @@ export default function Post(props) {
     </main>
   );
 }
-git;
