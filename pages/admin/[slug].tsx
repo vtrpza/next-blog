@@ -5,20 +5,11 @@ import { firestore, auth, serverTimestamp } from "../../lib/firebase";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import toast from "react-hot-toast";
-
-export type Post =
-  | {
-      title: string;
-      username: string;
-      slug: string;
-    }
-  | boolean
-  | Error;
 
 export default function AdminPostEdit(props) {
   return (
@@ -38,7 +29,7 @@ function PostManager() {
     .doc(auth.currentUser.uid)
     .collection("posts")
     .doc(typeof slug === "string" && slug);
-  const [post] = useDocumentData(postRef);
+  const post: any = useDocumentDataOnce(postRef)[0];
 
   return (
     <main className={styles.container}>
@@ -71,10 +62,12 @@ function PostManager() {
 }
 
 function PostForm({ defaultValues, postRef, preview }) {
-  const { register, handleSubmit, reset, watch } = useForm({
+  const { register, handleSubmit, reset, watch, formState, errors } = useForm({
     defaultValues,
     mode: "onChange",
   });
+
+  const { isValid, isDirty } = formState;
 
   const updatePost = async ({ content, published }) => {
     await postRef.update({
@@ -100,6 +93,19 @@ function PostForm({ defaultValues, postRef, preview }) {
         <textarea name="content" ref={register}></textarea>
 
         <fieldset>
+          <textarea
+            name="content"
+            ref={register({
+              maxLength: { value: 20000, message: "content is too long" },
+              minLength: { value: 10, message: "content is too short" },
+              required: { value: true, message: "content is required" },
+            })}
+          ></textarea>
+
+          {errors.content && (
+            <p className="text-danger">{errors.content.message}</p>
+          )}
+
           <input
             className={styles.checkbox}
             name="published"
@@ -109,7 +115,7 @@ function PostForm({ defaultValues, postRef, preview }) {
           <label>Published</label>
         </fieldset>
 
-        <button type="submit" className="btn-green">
+        <button type="submit" disabled={!isDirty || !isValid}>
           Save Changes
         </button>
       </div>
